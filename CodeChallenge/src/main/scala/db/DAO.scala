@@ -1,19 +1,32 @@
 package db
 import java.sql._
 //import com.typesafe.config._
-
+import java.util.Properties
+import scala.io.Source
 
 trait DAO {
    //jdbc driver name and database URL
-  lazy val JDBC_DRIVER = "com.mysql.jdbc.Driver"
- lazy val DB_URL = "jdbc:mysql://localhost:3306/mylogs"
-   //database credentials
- lazy val USER = "root"
- lazy val PASS = "password"
- 
-  // val appConf = ConfigFactory.parseFile(confFile)
-  
+  val   DBparameters=readMYSQLProperties()    
 
+  lazy val JDBC_DRIVER = /*"com.mysql.jdbc.Driver"*/DBparameters.getProperty("jdbc_driver")
+ lazy val DB_URL = /*"jdbc:mysql://localhost:3306/mylogs"*/DBparameters.getProperty("db_url")
+   //database credentials
+ lazy val USER = /*"root"*/DBparameters.getProperty("mysql_user")
+ lazy val PASS = /*"password"*/DBparameters.getProperty("mysql_pass")
+ 
+
+  
+      //read properties of mysql specified in src.main.resources  
+  def readMYSQLProperties(): Properties=
+  {
+     val url = getClass.getResource("/db.properties") 
+ val source = Source.fromURL(url)
+    val mysqlparameters = new Properties
+mysqlparameters.load(source.bufferedReader())
+
+mysqlparameters
+
+  }
   
 }
 
@@ -65,6 +78,10 @@ def insert()={
 
  // println("the end")
   }
+
+    
+    
+    
 
 }
 

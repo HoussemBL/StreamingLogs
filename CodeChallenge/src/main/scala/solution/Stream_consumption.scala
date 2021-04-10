@@ -14,17 +14,24 @@ import stream._
 import db._
 
 import java.util.Properties
-
+import java.util.Properties
+import scala.io.Source
 object Stream_consumption {
   def main(args: Array[String]): Unit = {
 
      val spark:SparkSession = SparkSession.builder()
       .master("local[*]")
       .appName("SparkByExample")
+      .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
       .getOrCreate()
 
-    
-    val consumer = KafkaConsumer("logs1", 10)
+val   Kafkaparameters=readKafkaProperties()    
+val kafka_topic=Kafkaparameters.getProperty("kafka_topic")
+val  timewindow=Kafkaparameters.getProperty("timewindow").toLong
+
+
+
+    val consumer = KafkaConsumer(kafka_topic, timewindow)
 
     //consuming Kafka topic
     val df = spark.readStream
@@ -41,6 +48,19 @@ object Stream_consumption {
     consumer.storeData_mysql(df_read)
 
     df_read.awaitTermination()
+
+  }
+  
+  
+  //read properties of kafka specified in src.main.resources  
+  def readKafkaProperties(): Properties=
+  {
+     val url = getClass.getResource("/kafka.properties") 
+ val source = Source.fromURL(url)
+    val Kafkaparameters = new Properties
+Kafkaparameters.load(source.bufferedReader())
+
+Kafkaparameters
 
   }
 }

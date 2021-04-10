@@ -13,23 +13,9 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.streaming.Trigger
 import org.apache.spark.sql.streaming.StreamingQuery
 
-abstract class Kafka {
-  def wait_time: Int
-  def topic: String
 
-    val schema = new StructType()
-    .add("ip", StringType)
-    .add("xx", StringType)
-    .add("username", StringType)
-    .add("date", StringType)
-    .add("datepart2", StringType)
-    .add("operation", StringType)
-    .add("acess", StringType)
-    .add("status", LongType)
-    .add("size", LongType)
-}
 
-case class KafkaConsumer(topic: String, wait_time: Int) extends Kafka {
+case class KafkaConsumer(var topic: String, var wait_time:Long) extends Kafka {
   
 
 
@@ -45,11 +31,11 @@ case class KafkaConsumer(topic: String, wait_time: Int) extends Kafka {
   }
 
   def constructStreamingDF(df_out: DataFrame): StreamingQuery = {
-    var processingTime = this.wait_time + " seconds"
+    //var processingTime = this.wait_time + " seconds"
     val df = df_out.writeStream
       .format("console")
       .outputMode("append")
-      .trigger(Trigger.ProcessingTime(processingTime))
+      .trigger(Trigger.ProcessingTime(convertTime))
       // .trigger(Trigger.Once())
       // .trigger(Trigger.Continuous("10 seconds"))
       .start()

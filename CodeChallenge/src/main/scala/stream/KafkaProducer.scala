@@ -13,11 +13,16 @@ import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.streaming.Trigger
 
-case class KafkaProducer(topic: String,wait_time: Int) extends Kafka
+case class KafkaProducer(var topic: String, var wait_time:Long) extends Kafka
 {
   
+  
+  
 def writelogs_topic(df: DataFrame)={
-//  val ds = df.toJSON
+  
+
+  
+  
 val ds =  df.selectExpr("CAST(ip AS STRING) AS key", "to_json(struct(*)) AS value")
   val df_writing=ds.writeStream
    .format("kafka")
@@ -25,8 +30,8 @@ val ds =  df.selectExpr("CAST(ip AS STRING) AS key", "to_json(struct(*)) AS valu
    .option("kafka.bootstrap.servers", "localhost:9092")
    .option("topic", topic)
 //   .option("path", "/tmp")
-   .option("checkpointLocation", "/tmp/checkpoints")
-   .trigger(Trigger.ProcessingTime("10 seconds"))
+   .option("checkpointLocation", "/tmp/checkpoints1")
+   .trigger(Trigger.ProcessingTime(convertTime))
    //.trigger(Trigger.Once())
    .start()
     
