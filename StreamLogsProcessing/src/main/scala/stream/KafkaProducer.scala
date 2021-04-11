@@ -14,13 +14,14 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.streaming.Trigger
 
 /****KafkaProduce class provides the set of methods necessary to write in a kafka topic**/
-case class KafkaProducer(topic: String, wait_time:Long) extends Kafka
+case class KafkaProducer(topic: String, timewindow:Long) extends Kafka
 
 //companion object
 object KafkaProducer{
   
   //write in a topic the stream of logs
-def writelogs_topic(topic:String, intervalBatchStr: String,df: DataFrame)={  
+def writelogs_topic(topic:String, intervalBatch: Long,df: DataFrame)={  
+  
 val ds =  df.selectExpr("CAST(ip AS STRING) AS key", "to_json(struct(*)) AS value")
   val df_writing=ds.writeStream
    .format("kafka")
@@ -28,12 +29,17 @@ val ds =  df.selectExpr("CAST(ip AS STRING) AS key", "to_json(struct(*)) AS valu
    .option("kafka.bootstrap.servers", "localhost:9092")
    .option("topic", topic)
    .option("checkpointLocation", "/tmp/checkpoints")
-   .trigger(Trigger.ProcessingTime(intervalBatchStr))
+   .trigger(Trigger.ProcessingTime(intervalBatch))
    .start()
     
-   
-   
+      
    df_writing.awaitTermination()  
 }
+
+//
+////
+//def getschema() :StructType= {
+//  Kafka.schema
+//  }
 
 }

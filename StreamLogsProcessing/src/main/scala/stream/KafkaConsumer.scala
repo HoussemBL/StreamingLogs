@@ -13,7 +13,7 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.streaming.Trigger
 import org.apache.spark.sql.streaming.StreamingQuery
 
-case class KafkaConsumer(topic: String, wait_time: Long) extends Kafka 
+case class KafkaConsumer(topic: String, timewindow: Long) extends Kafka 
 
   
 //companion object  
@@ -52,5 +52,7 @@ object KafkaConsumer{
     }
 
   }
+  
+  
 
 }
