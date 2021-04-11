@@ -1,7 +1,7 @@
 # StreamingLogs
 
 
-# Prerequis
+# prerequisite
 setup of mysql, kafka and spark
 
 # Preparation step
