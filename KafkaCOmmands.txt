@@ -1,3 +1,4 @@
+
 ******** delete topic
 
 kafka-topics --zookeeper zookeeper:2181 --delete --topic logs
@@ -12,3 +13,4 @@ kafka-topics --create --topic logs --partitions 1 --replication-factor 1 --if-no
 ***consume a topic
 
 kafka-console-consumer --bootstrap-server localhost:29092 --topic logs --from-beginning --max-messages 100
+
